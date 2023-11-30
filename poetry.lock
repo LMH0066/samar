@@ -325,6 +325,59 @@ pytest = "*"
 scikit-learn = ">=0.24.2"
 
 [[package]]
+name = "flake8"
+version = "6.1.0"
+description = "the modular source code checker: pep8 pyflakes and co"
+optional = false
+python-versions = ">=3.8.1"
+files = [
+    {file = "flake8-6.1.0-py2.py3-none-any.whl", hash = "sha256:ffdfce58ea94c6580c77888a86506937f9a1a227dfcd15f245d694ae20a6b6e5"},
+    {file = "flake8-6.1.0.tar.gz", hash = "sha256:d5b3857f07c030bdb5bf41c7f53799571d75c4491748a3adcd47de929e34cd23"},
+]
+
+[package.dependencies]
+mccabe = ">=0.7.0,<0.8.0"
+pycodestyle = ">=2.11.0,<2.12.0"
+pyflakes = ">=3.1.0,<3.2.0"
+
+[[package]]
+name = "flake8-black"
+version = "0.3.6"
+description = "flake8 plugin to call black as a code style validator"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "flake8-black-0.3.6.tar.gz", hash = "sha256:0dfbca3274777792a5bcb2af887a4cad72c72d0e86c94e08e3a3de151bb41c34"},
+    {file = "flake8_black-0.3.6-py3-none-any.whl", hash = "sha256:fe8ea2eca98d8a504f22040d9117347f6b367458366952862ac3586e7d4eeaca"},
+]
+
+[package.dependencies]
+black = ">=22.1.0"
+flake8 = ">=3"
+tomli = {version = "*", markers = "python_version < \"3.11\""}
+
+[package.extras]
+develop = ["build", "twine"]
+
+[[package]]
+name = "flake8-isort"
+version = "6.1.1"
+description = "flake8 plugin that integrates isort"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "flake8_isort-6.1.1-py3-none-any.whl", hash = "sha256:0fec4dc3a15aefbdbe4012e51d5531a2eb5fa8b981cdfbc882296a59b54ede12"},
+    {file = "flake8_isort-6.1.1.tar.gz", hash = "sha256:c1f82f3cf06a80c13e1d09bfae460e9666255d5c780b859f19f8318d420370b3"},
+]
+
+[package.dependencies]
+flake8 = "*"
+isort = ">=5.0.0,<6"
+
+[package.extras]
+test = ["pytest"]
+
+[[package]]
 name = "fonttools"
 version = "4.45.1"
 description = "Tools to manipulate font files"
@@ -417,6 +470,23 @@ files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
 ]
+
+[[package]]
+name = "isort"
+version = "5.12.0"
+description = "A Python utility / library to sort Python imports."
+optional = false
+python-versions = ">=3.8.0"
+files = [
+    {file = "isort-5.12.0-py3-none-any.whl", hash = "sha256:f84c2818376e66cf843d497486ea8fed8700b340f308f076c6fb1229dff318b6"},
+    {file = "isort-5.12.0.tar.gz", hash = "sha256:8bef7dde241278824a6d83f44a544709b065191b95b6e50894bdc722fcba0504"},
+]
+
+[package.extras]
+colors = ["colorama (>=0.4.3)"]
+pipfile-deprecated-finder = ["pip-shims (>=0.5.2)", "pipreqs", "requirementslib"]
+plugins = ["setuptools"]
+requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
 name = "joblib"
@@ -604,6 +674,17 @@ packaging = ">=20.0"
 pillow = ">=8"
 pyparsing = ">=2.3.1"
 python-dateutil = ">=2.7"
+
+[[package]]
+name = "mccabe"
+version = "0.7.0"
+description = "McCabe checker, plugin for flake8"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
+    {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
+]
 
 [[package]]
 name = "mypy-extensions"
@@ -806,6 +887,17 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.8.0)"]
 
 [[package]]
+name = "pastel"
+version = "0.2.1"
+description = "Bring colors to your terminal."
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "pastel-0.2.1-py2.py3-none-any.whl", hash = "sha256:4349225fcdf6c2bb34d483e523475de5bb04a5c10ef711263452cb37d7dd4364"},
+    {file = "pastel-0.2.1.tar.gz", hash = "sha256:e6581ac04e973cac858828c6202c1e1e81fee1dc7de7683f3e1ffe0bfd8a573d"},
+]
+
+[[package]]
 name = "pathspec"
 version = "0.11.2"
 description = "Utility library for gitignore style pattern matching of file paths."
@@ -914,6 +1006,24 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "poethepoet"
+version = "0.24.4"
+description = "A task runner that works well with poetry."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "poethepoet-0.24.4-py3-none-any.whl", hash = "sha256:fb4ea35d7f40fe2081ea917d2e4102e2310fda2cde78974050ca83896e229075"},
+    {file = "poethepoet-0.24.4.tar.gz", hash = "sha256:ff4220843a87c888cbcb5312c8905214701d0af60ac7271795baa8369b428fef"},
+]
+
+[package.dependencies]
+pastel = ">=0.2.1,<0.3.0"
+tomli = ">=1.2.2"
+
+[package.extras]
+poetry-plugin = ["poetry (>=1.0,<2.0)"]
+
+[[package]]
 name = "pybind11"
 version = "2.11.1"
 description = "Seamless operability between C++11 and Python"
@@ -926,6 +1036,28 @@ files = [
 
 [package.extras]
 global = ["pybind11-global (==2.11.1)"]
+
+[[package]]
+name = "pycodestyle"
+version = "2.11.1"
+description = "Python style guide checker"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pycodestyle-2.11.1-py2.py3-none-any.whl", hash = "sha256:44fe31000b2d866f2e41841b18528a505fbd7fef9017b04eff4e2648a0fadc67"},
+    {file = "pycodestyle-2.11.1.tar.gz", hash = "sha256:41ba0e7afc9752dfb53ced5489e89f8186be00e599e712660695b7a75ff2663f"},
+]
+
+[[package]]
+name = "pyflakes"
+version = "3.1.0"
+description = "passive checker of Python programs"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pyflakes-3.1.0-py2.py3-none-any.whl", hash = "sha256:4132f6d49cb4dae6819e5379898f2b8cce3c5f23994194c24b77d5da2e36f774"},
+    {file = "pyflakes-3.1.0.tar.gz", hash = "sha256:a0aae034c444db0071aa077972ba4768d40c830d9539fd45bf4cd3f8f6992efc"},
+]
 
 [[package]]
 name = "pyparsing"
@@ -1236,4 +1368,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "916608da2c74cec9ef1eb5f8d2c2bb631d69d47bb69f555fe4e99653c34bddac"
+content-hash = "ee9dbb219b8a829764551628697e8a15d91b6f45d4ddab9b7039bb1af736fac2"

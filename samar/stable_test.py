@@ -10,7 +10,7 @@ def calculate(X, y, epoch):
     accs, rocs = dict(), dict()
     for function in FUNS:
         accuracy, roc = [], [[], [], []]
-        for random_state in range(1, epoch+1):
+        for random_state in range(1, epoch + 1):
             if function is SVC:
                 clf = function(probability=True, random_state=random_state)
             else:

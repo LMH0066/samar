@@ -6,7 +6,6 @@ from sklearn.metrics import auc, roc_curve
 from sklearn.preprocessing import label_binarize
 from sklearn.svm import SVC
 
-
 FUNS = [
     # Boosting
     AdaBoostClassifier,
@@ -93,11 +92,14 @@ def train_model(clf, X_train, y_train, X_test, y_test, n_class):
 def write_accs_file(path, accs):
     pd.DataFrame(accs).to_csv(path)
 
+
 def read_accs_file(path):
     return pd.read_csv(path, index_col=0)
 
+
 def write_rocs_file(path, rocs):
     np.save(path, rocs)
+
 
 def read_rocs_file(path):
     return np.load(path, allow_pickle=True).item()
