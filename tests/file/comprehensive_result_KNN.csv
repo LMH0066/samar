@@ -1,0 +1,6 @@
+,Accuracy(%),ROC-AUC
+AdaBoost,47.67 ±3.92,0.75 ±0.02
+GradientBoosting,57.14 ±2.7,0.82 ±0.02
+RandomForest,59.47 ±3.12,0.83 ±0.02
+ExtraTrees,57.67 ±2.67,0.82 ±0.01
+SVM,50.16 ±2.33,0.8 ±0.02

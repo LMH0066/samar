@@ -9,4 +9,5 @@ poetry install
 #### pre commit
 ```
 poe format
+poe test
 ```

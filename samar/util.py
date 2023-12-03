@@ -1,38 +1,50 @@
+import importlib
+
 import numpy as np
 import pandas as pd
+import yaml
 from fancyimpute import KNN
-from sklearn.ensemble import *
-from sklearn.metrics import auc, roc_curve
-from sklearn.preprocessing import label_binarize
-from sklearn.svm import SVC
 
-FUNS = [
-    # Boosting
-    AdaBoostClassifier,
-    GradientBoostingClassifier,
-    # Bagging
-    RandomForestClassifier,
-    ExtraTreesClassifier,
-    # Other
-    SVC,
-]
+"""
+config.yaml related code
+"""
 
 
-def load_data(file_path, preprocess_func: str):
-    data = pd.read_excel(file_path, index_col=0, header=[0])
+def load_config(path: str) -> dict:
+    return yaml.safe_load(open(path, "r"))
 
-    if preprocess_func:
-        result_col = "efficacy evaluation"
-        data = data.dropna(subset=[result_col])
-        y = data[result_col].copy()
-        data = data.drop(["efficacy evaluation"], axis=1)
 
-        filter_data = Preprocess().do(data, preprocess_func)
-        X = np.array(filter_data)
-        y = np.array(y[filter_data.index])
-        return X, y, filter_data
-    else:
-        return data
+def get_funcs_name(funcs: dict):
+    return funcs.keys()
+
+
+def get_clf(funcs, func_name, random_state):
+    def _import(class_path: str):
+        module_name, class_name = class_path.rsplit(".", 1)
+        return getattr(importlib.import_module(module_name), class_name)
+
+    func = funcs[func_name]
+    return _import(func["class_path"])(**func["kwargs"], random_state=random_state)
+
+
+"""
+compute related code
+"""
+
+
+def load_xlsx(
+    path: str, preprocess_func: str, result_col: str = "efficacy evaluation"
+) -> (np.array, np.array, pd.DataFrame):
+    data = pd.read_excel(path, index_col=0, header=[0])
+
+    data = data.dropna(subset=[result_col])
+    y = data[result_col].copy()
+    data = data.drop(["efficacy evaluation"], axis=1)
+
+    filter_data = Preprocess().do(data, preprocess_func)
+    X = np.array(filter_data)
+    y = np.array(y[filter_data.index])
+    return X, y, filter_data
 
 
 class Preprocess:
@@ -42,7 +54,7 @@ class Preprocess:
             "KNN": self.KNN,
         }
 
-    def do(self, data: pd.DataFrame, func_name: str):
+    def do(self, data: pd.DataFrame, func_name: str) -> pd.DataFrame:
         filter_data = self.function_map[func_name](data)
 
         for column in filter_data.columns:
@@ -70,36 +82,12 @@ class Preprocess:
         return filter_data
 
 
-def train_model(clf, X_train, y_train, X_test, y_test, n_class):
-    clf.fit(X_train, y_train)
-
-    # evaluate
-    accuracy = clf.score(X_test, y_test)
-    y_pred_proba = clf.predict_proba(X_test)
-
-    if n_class == 2:
-        fpr, tpr, thersholds = roc_curve(y_test, y_pred_proba[:, 1])
-    else:
-        # multi class
-        y_test_one_hot = label_binarize(y_test, classes=np.arange(n_class))
-        fpr, tpr, thersholds = roc_curve(y_test_one_hot.ravel(), y_pred_proba.ravel())
-    roc_auc = auc(fpr, tpr)
-    roc = [fpr, tpr, roc_auc]
-
-    return accuracy, roc
+def write_stable_test_result(path: str, accs: dict, rocs: dict):
+    if not path.endswith(".npy"):
+        path += ".npy"
+    np.save(path, {"accs": accs, "rocs": rocs})
 
 
-def write_accs_file(path, accs):
-    pd.DataFrame(accs).to_csv(path)
-
-
-def read_accs_file(path):
-    return pd.read_csv(path, index_col=0)
-
-
-def write_rocs_file(path, rocs):
-    np.save(path, rocs)
-
-
-def read_rocs_file(path):
-    return np.load(path, allow_pickle=True).item()
+def read_stable_test_result(path: str) -> (dict, dict):
+    result = np.load(path, allow_pickle=True).item()
+    return result["accs"], result["rocs"]

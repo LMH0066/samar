@@ -1,32 +1,27 @@
-import click
 import numpy as np
 import pandas as pd
 
 from samar.draw import lineplot
-from samar.util import read_accs_file, read_rocs_file
 
 
-def rocsplot(rocs, output_dir=None):
+def rocsplot(rocs: dict, output_path: str = None):
     _rocs = pd.DataFrame()
     for method_name in rocs.keys():
-        _xs, _ys = rocs[method_name][0], rocs[method_name][1]
+        roc = pd.DataFrame(rocs[method_name])
+        epoch_num = roc.shape[0]
 
-        tprs = []
-        mean_fpr = np.linspace(0, 1, 100)
-        for i in range(len(_xs)):
-            _x, _y = _xs[i], _ys[i]
-            interp_tpr = np.interp(mean_fpr, _x, _y)
+        mean_fpr, tprs = np.linspace(0, 1, 100), []
+        for _, row in roc.iterrows():
+            _fpr, _tpr = row["fpr"], row["tpr"]
+            interp_tpr = np.interp(mean_fpr, _fpr, _tpr)
             interp_tpr[0], interp_tpr[-1] = 0.0, 1
-            _tprs = interp_tpr.tolist()
-            tprs.extend(_tprs)
+            tprs.extend(interp_tpr.tolist())
 
         _df = pd.DataFrame(
             {
-                "FPR": mean_fpr.tolist() * len(_xs),
+                "FPR": mean_fpr.tolist() * epoch_num,
                 "TPR": tprs,
-                "method": "{}(AUC={})".format(
-                    method_name, round(np.mean(rocs[method_name][2]), 2)
-                ),
+                "method": "{}(AUC={})".format(method_name, round(roc["auc"].mean(), 2)),
             }
         )
         _rocs = pd.concat([_rocs, _df])
@@ -37,39 +32,26 @@ def rocsplot(rocs, output_dir=None):
         x="FPR",
         y="TPR",
         hue="method",
-        output_path="{}/ROC.pdf".format(output_dir) if output_dir else None,
+        output_path=output_path,
         figsize=(8, 8),
     )
 
 
-def get_comprehensive_comparison(accs, rocs, output_dir=None):
-    acc_result = pd.DataFrame(accs.mean(), columns=["Accuracy(%)"])
+def get_comprehensive_comparison(
+    accs: dict, rocs: dict, output_path: str = None
+) -> pd.DataFrame:
+    acc = pd.DataFrame(accs)
+    acc_result = pd.DataFrame(acc.mean(), columns=["Accuracy(%)"])
     acc_result = (round(acc_result * 100, 2)).astype(str)
-    acc_result["Accuracy(%)"] += " ±" + (round(accs.std() * 100, 2)).astype(str)
+    acc_result["Accuracy(%)"] += " ±" + (round(acc.std() * 100, 2)).astype(str)
 
-    auc = pd.DataFrame([rocs[key][2] for key in rocs.keys()], index=rocs.keys()).T
+    roc = pd.DataFrame(rocs)
+    auc = roc.map(lambda x: x["auc"])
     auc_result = pd.DataFrame(auc.mean(), columns=["ROC-AUC"])
     auc_result = (round(auc_result, 2)).astype(str)
     auc_result["ROC-AUC"] += " ±" + (round(auc.std(), 2)).astype(str)
 
     comprehensive_result = pd.concat([acc_result, auc_result], axis=1)
-    if output_dir:
-        comprehensive_result.to_csv(
-            "{}/comprehensive_comparison.csv".format(output_dir)
-        )
+    if output_path:
+        comprehensive_result.to_csv(output_path)
     return comprehensive_result
-
-
-@click.command()
-@click.option("--accs_path", help=".csv file path", type=str)
-@click.option("--rocs_path", default=".npy file path", type=str)
-@click.option("--output_dir", help="Folder path for results output", type=str)
-def run(accs_path, rocs_path, output_dir):
-    accs, rocs = read_accs_file(accs_path), read_rocs_file(rocs_path)
-
-    rocsplot(rocs, output_dir)
-    get_comprehensive_comparison(accs, rocs, output_dir)
-
-
-if __name__ == "__main__":
-    run()

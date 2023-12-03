@@ -1,0 +1,26 @@
+epoch: 50
+test_size: 0.3
+funcs:
+  # Boosting
+  AdaBoost:
+    class_path: sklearn.ensemble.AdaBoostClassifier
+    kwargs:
+      n_estimators: 100
+  GradientBoosting:
+    class_path: sklearn.ensemble.GradientBoostingClassifier
+    kwargs:
+      n_estimators: 100
+  # Bagging
+  RandomForest:
+    class_path: sklearn.ensemble.RandomForestClassifier
+    kwargs:
+      n_estimators: 100
+  ExtraTrees:
+    class_path: sklearn.ensemble.ExtraTreesClassifier
+    kwargs:
+      n_estimators: 100
+  # Other
+  SVM:
+    class_path: sklearn.svm.SVC
+    kwargs:
+      probability: True
