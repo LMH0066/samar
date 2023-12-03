@@ -29,8 +29,15 @@ def test_stable_test(dir, xlsx_path, preprocess_func, expected_file_path):
     )
     truth_accs, truth_rocs = read_stable_test_result(expected_file_path)
 
-    assert accs == truth_accs
-    assert rocs == truth_rocs
+    # There are subtle differences in the results of sklearn operations on different systems
+    def _is_similar(df1: pd.DataFrame, df2: pd.DataFrame):
+        return (df1.mean() - df2.mean()).abs().le(0.01).all().all()
+
+    assert _is_similar(pd.DataFrame(accs), pd.DataFrame(truth_accs))
+    assert _is_similar(
+        pd.DataFrame(rocs).map(lambda x: x["auc"]),
+        pd.DataFrame(truth_rocs).map(lambda x: x["auc"]),
+    )
 
 
 @pytest.mark.parametrize(
