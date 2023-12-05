@@ -4,7 +4,7 @@ import pandas as pd
 from samar.draw import lineplot
 
 
-def rocsplot(rocs: dict, output_path: str = None):
+def rocsplot(rocs: dict, output_path: str = None, show: bool = True):
     _rocs = pd.DataFrame()
     for method_name in rocs.keys():
         roc = pd.DataFrame(rocs[method_name])
@@ -34,6 +34,7 @@ def rocsplot(rocs: dict, output_path: str = None):
         hue="method",
         output_path=output_path,
         figsize=(8, 8),
+        show=show,
     )
 
 

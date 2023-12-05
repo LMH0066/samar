@@ -17,7 +17,7 @@ from samar.util import read_stable_test_result
 def test_rocsplot(dir, stable_test_result_path):
     _, rocs = read_stable_test_result(stable_test_result_path)
 
-    rocsplot(rocs, os.path.join(dir, "ROC.pdf"))
+    rocsplot(rocs, os.path.join(dir, "ROC.pdf"), False)
 
 
 @pytest.mark.parametrize(

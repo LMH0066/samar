@@ -10,6 +10,7 @@ def lineplot(
     xticklabels=None,
     output_path: str = None,
     figsize: tuple = (24, 12),
+    show: bool = True,
 ):
     sns.set_theme(style="whitegrid")
 
@@ -30,4 +31,5 @@ def lineplot(
 
     if output_path:
         plt.savefig(output_path, bbox_inches="tight")
-    plt.show()
+    if show:
+        plt.show()
