@@ -72,6 +72,11 @@ def cal_accs_and_rocs(
     epoch: int = DEFAULT_CONFIG["epoch"],
     funcs: dict = DEFAULT_CONFIG["funcs"],
 ) -> (dict, dict):
+    if X_tests.ndim == 2 and y_tests.ndim == 1:
+        X_tests = np.tile(X_tests, (epoch, 1, 1))
+        y_tests = np.tile(y_tests, (epoch, 1))
+    assert X_tests.ndim == 3 and y_tests.ndim == 2
+
     accs, rocs = dict(), dict()
     for func_name in get_funcs_name(funcs):
         accs[func_name], rocs[func_name] = [], []
