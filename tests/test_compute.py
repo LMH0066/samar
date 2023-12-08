@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import pytest
 
-from samar.compute import cal_RF_feature_importance, stable_test
+from samar.compute import cal_RF_feature_importance, predict, stable_test
 from samar.util import load_xlsx, read_stable_test_result
 
 
@@ -18,9 +18,9 @@ from samar.util import load_xlsx, read_stable_test_result
         ("tests/file/SSNHL.xlsx", "KNN", "tests/file/stable_test_result_KNN.npy"),
     ],
 )
-def test_stable_test(dir, xlsx_path, preprocess_func, expected_file_path):
+def test_stable_test_and_predict(dir, xlsx_path, preprocess_func, expected_file_path):
     X, y, _ = load_xlsx(xlsx_path, preprocess_func)
-    accs, rocs = stable_test(
+    accs, rocs, clfs = stable_test(
         X,
         y,
         output_path=os.path.join(
@@ -38,6 +38,8 @@ def test_stable_test(dir, xlsx_path, preprocess_func, expected_file_path):
         pd.DataFrame(rocs).map(lambda x: x["auc"]),
         pd.DataFrame(truth_rocs).map(lambda x: x["auc"]),
     )
+
+    predict(clfs, X)
 
 
 @pytest.mark.parametrize(

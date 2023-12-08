@@ -1,4 +1,5 @@
 import importlib
+import os
 
 import numpy as np
 import pandas as pd
@@ -12,6 +13,9 @@ config.yaml related code
 
 def load_config(path: str) -> dict:
     return yaml.safe_load(open(path, "r"))
+
+
+DEFAULT_CONFIG = load_config(os.path.join(os.path.dirname(__file__), "config.yaml"))
 
 
 def get_funcs_name(funcs: dict):
