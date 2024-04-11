@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import auc, roc_curve
@@ -18,7 +20,7 @@ def generate_datasets(
     y: np.array,
     epoch: int = DEFAULT_CONFIG["epoch"],
     test_size: float = DEFAULT_CONFIG["test_size"],
-) -> (np.array, np.array, np.array, np.array):
+) -> Tuple[np.array, np.array, np.array, np.array]:
     X_trains, X_tests, y_trains, y_tests = [], [], [], []
     for i in range(epoch):
         X_train, X_test, y_train, y_test = train_test_split(
@@ -71,7 +73,7 @@ def cal_accs_and_rocs(
     n_class: int,
     epoch: int = DEFAULT_CONFIG["epoch"],
     funcs: dict = DEFAULT_CONFIG["funcs"],
-) -> (dict, dict):
+) -> Tuple[dict, dict]:
     if X_tests.ndim == 2 and y_tests.ndim == 1:
         X_tests = np.tile(X_tests, (epoch, 1, 1))
         y_tests = np.tile(y_tests, (epoch, 1))
@@ -101,7 +103,7 @@ def stable_test(
     y: np.array,
     output_path: str = None,
     config_path: str = None,
-) -> (dict, dict, dict):
+) -> Tuple[dict, dict, dict]:
     config = load_config(config_path) if config_path else DEFAULT_CONFIG
 
     X_trains, X_tests, y_trains, y_tests = generate_datasets(

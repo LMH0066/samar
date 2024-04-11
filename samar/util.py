@@ -1,5 +1,6 @@
 import importlib
 import os
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -38,12 +39,12 @@ compute related code
 
 def load_xlsx(
     path: str, preprocess_func: str, result_col: str = "efficacy evaluation"
-) -> (np.array, np.array, pd.DataFrame):
+) -> Tuple[np.array, np.array, pd.DataFrame]:
     data = pd.read_excel(path, index_col=0, header=[0])
 
     data = data.dropna(subset=[result_col])
     y = data[result_col].copy()
-    data = data.drop(["efficacy evaluation"], axis=1)
+    data = data.drop([result_col], axis=1)
 
     filter_data = Preprocess().do(data, preprocess_func)
     X = np.array(filter_data)
@@ -92,6 +93,6 @@ def write_stable_test_result(path: str, accs: dict, rocs: dict):
     np.save(path, {"accs": accs, "rocs": rocs})
 
 
-def read_stable_test_result(path: str) -> (dict, dict):
+def read_stable_test_result(path: str) -> Tuple[dict, dict]:
     result = np.load(path, allow_pickle=True).item()
     return result["accs"], result["rocs"]
