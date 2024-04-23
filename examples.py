@@ -20,7 +20,7 @@ def cli():
 
 @cli.command()
 @click.option("--xlsx_path", type=str)
-@click.option("--task", type=str)
+@click.option("--task", type=str, default="classification or regression")
 @click.option("--preprocess_func", type=str, default="default")
 def general_process(xlsx_path, task, preprocess_func):
     X, y, _ = load_xlsx(xlsx_path, preprocess_func)
@@ -40,7 +40,7 @@ def general_process(xlsx_path, task, preprocess_func):
 
 @cli.command()
 @click.option("--xlsx_path", type=str)
-@click.option("--task", type=str)
+@click.option("--task", type=str, default="classification or regression")
 @click.option("--preprocess_func", type=str, default="default")
 def feature_analyse(xlsx_path, task, preprocess_func):
     X, y, filter_data = load_xlsx(xlsx_path, preprocess_func)
@@ -57,7 +57,7 @@ def feature_analyse(xlsx_path, task, preprocess_func):
 @cli.command()
 @click.option("--xlsx_path", type=str)
 @click.option("--test_xlsx_path", type=str)
-@click.option("--task", type=str)
+@click.option("--task", type=str, default="classification or regression")
 @click.option("--preprocess_func", type=str, default="default")
 def independent_verification(xlsx_path, test_xlsx_path, task, preprocess_func):
     X, y, _ = load_xlsx(xlsx_path, preprocess_func)

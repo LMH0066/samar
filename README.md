@@ -11,6 +11,7 @@
 - ✅ Robust comparison and prediction of multiple methods.
 - ✅ Feature importance analysis with RandomForest.
 - ✅ Robust comparison in independent verification dataset.
+- ✅ Both support classification and regression task.
 
 
 ## Quick start
@@ -24,4 +25,3 @@ pip install samar
 2. Use samar like [examples.py](https://github.com/LMH0066/samar/blob/main/examples.py)
 
 Once the package is installed, the main ways of use are in examples.py.
-
