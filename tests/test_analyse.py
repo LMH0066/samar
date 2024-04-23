@@ -15,9 +15,9 @@ from samar.util import read_stable_test_result
     ],
 )
 def test_rocsplot(dir, stable_test_result_path):
-    _, rocs = read_stable_test_result(stable_test_result_path)
+    scores = read_stable_test_result(stable_test_result_path)
 
-    rocsplot(rocs, os.path.join(dir, "ROC.pdf"), False)
+    rocsplot(scores["rocs"], os.path.join(dir, "ROC.pdf"), False)
 
 
 @pytest.mark.parametrize(
@@ -34,11 +34,10 @@ def test_rocsplot(dir, stable_test_result_path):
     ],
 )
 def test_get_comprehensive_comparison(dir, stable_test_result_path, expected_file_path):
-    accs, rocs = read_stable_test_result(stable_test_result_path)
+    scores = read_stable_test_result(stable_test_result_path)
 
     comprehensive_result = get_comprehensive_comparison(
-        accs,
-        rocs,
+        scores,
         os.path.join(dir, "comprehensive_result.csv"),
     )
 

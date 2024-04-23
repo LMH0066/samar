@@ -1,4 +1,5 @@
 import importlib
+import inspect
 import os
 from typing import Tuple
 
@@ -23,13 +24,24 @@ def get_funcs_name(funcs: dict):
     return funcs.keys()
 
 
-def get_clf(funcs, func_name, random_state):
+def get_clf(funcs: dict, func_name: str, task: str, random_state: int):
     def _import(class_path: str):
         module_name, class_name = class_path.rsplit(".", 1)
         return getattr(importlib.import_module(module_name), class_name)
 
-    func = funcs[func_name]
-    return _import(func["class_path"])(**func["kwargs"], random_state=random_state)
+    def _filter_args(obj, args):
+        accepted_args = inspect.signature(obj).parameters
+        filtered_args = {
+            key: value for key, value in args.items() if key in accepted_args
+        }
+        return filtered_args
+
+    func = funcs[func_name].copy()
+    func["kwargs"].update(dict(random_state=random_state))
+
+    obj = _import(func["class_path"][task])
+    args = _filter_args(obj, func["kwargs"])
+    return obj(**args)
 
 
 """
@@ -87,12 +99,12 @@ class Preprocess:
         return filter_data
 
 
-def write_stable_test_result(path: str, accs: dict, rocs: dict):
+def write_stable_test_result(path: str, scores: dict):
     if not path.endswith(".npy"):
         path += ".npy"
-    np.save(path, {"accs": accs, "rocs": rocs})
+    np.save(path, scores)
 
 
-def read_stable_test_result(path: str) -> Tuple[dict, dict]:
-    result = np.load(path, allow_pickle=True).item()
-    return result["accs"], result["rocs"]
+def read_stable_test_result(path: str) -> dict:
+    scores = np.load(path, allow_pickle=True).item()
+    return scores

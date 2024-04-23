@@ -38,21 +38,35 @@ def rocsplot(rocs: dict, output_path: str = None, show: bool = True):
     )
 
 
-def get_comprehensive_comparison(
-    accs: dict, rocs: dict, output_path: str = None
-) -> pd.DataFrame:
-    acc = pd.DataFrame(accs)
-    acc_result = pd.DataFrame(acc.mean(), columns=["Accuracy(%)"])
-    acc_result = (round(acc_result * 100, 2)).astype(str)
-    acc_result["Accuracy(%)"] += " ±" + (round(acc.std() * 100, 2)).astype(str)
+def get_comprehensive_comparison(scores: dict, output_path: str = None) -> pd.DataFrame:
+    results = pd.DataFrame()
 
-    roc = pd.DataFrame(rocs)
-    auc = roc.map(lambda x: x["auc"])
-    auc_result = pd.DataFrame(auc.mean(), columns=["ROC-AUC"])
-    auc_result = (round(auc_result, 2)).astype(str)
-    auc_result["ROC-AUC"] += " ±" + (round(auc.std(), 2)).astype(str)
+    if "accs" in scores.keys():
+        acc = pd.DataFrame(scores["accs"])
+        acc_result = pd.DataFrame(acc.mean(), columns=["Accuracy(%)"])
+        acc_result = (round(acc_result * 100, 2)).astype(str)
+        acc_result["Accuracy(%)"] += " ±" + (round(acc.std() * 100, 2)).astype(str)
+        results = pd.concat([results, acc_result], axis=1)
 
-    comprehensive_result = pd.concat([acc_result, auc_result], axis=1)
+    if "rocs" in scores.keys():
+        roc = pd.DataFrame(scores["rocs"])
+        auc = roc.map(lambda x: x["auc"])
+        auc_result = pd.DataFrame(auc.mean(), columns=["ROC-AUC"])
+        auc_result = (round(auc_result, 2)).astype(str)
+        auc_result["ROC-AUC"] += " ±" + (round(auc.std(), 2)).astype(str)
+        results = pd.concat([results, auc_result], axis=1)
+
+    if "pccs" in scores.keys():
+        pcc = pd.DataFrame(scores["pccs"])
+        r, p = pcc.map(lambda x: x["r"]), pcc.map(lambda x: x["p"])
+        r_result = pd.DataFrame(r.mean(), columns=["Pearson'r(%)"])
+        p_result = pd.DataFrame(p.mean(), columns=["Pearson'p(%)"])
+        r_result = (round(r_result * 100, 2)).astype(str)
+        p_result = (round(p_result * 100, 2)).astype(str)
+        r_result["Pearson'r(%)"] += " ±" + (round(r.std() * 100, 2)).astype(str)
+        p_result["Pearson'p(%)"] += " ±" + (round(p.std() * 100, 2)).astype(str)
+        results = pd.concat([results, r_result, p_result], axis=1)
+
     if output_path:
-        comprehensive_result.to_csv(output_path)
-    return comprehensive_result
+        results.to_csv(output_path)
+    return results
