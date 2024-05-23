@@ -4,7 +4,7 @@ import numpy as np
 from samar.analyse import get_comprehensive_comparison, rocsplot
 from samar.compute import (
     cal_accs_and_rocs,
-    cal_RF_feature_importance,
+    cal_shap,
     generate_datasets,
     predict,
     stable_test,
@@ -45,13 +45,7 @@ def general_process(xlsx_path, task, preprocess_func):
 def feature_analyse(xlsx_path, task, preprocess_func):
     X, y, filter_data = load_xlsx(xlsx_path, preprocess_func)
 
-    importance = cal_RF_feature_importance(
-        X,
-        y,
-        filter_data.columns,
-        task,
-        output_path="RF_feature_importance_result_{}.csv",
-    )
+    importance = cal_shap(X, y, task)
 
 
 @cli.command()

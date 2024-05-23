@@ -1,7 +1,9 @@
+import os
 from typing import Literal, Tuple
 
 import numpy as np
 import pandas as pd
+import shap
 from scipy.stats import pearsonr
 from sklearn.metrics import auc, roc_curve
 from sklearn.model_selection import train_test_split
@@ -184,31 +186,32 @@ def predict(clfs: dict, X_tests: np.array) -> dict:
     return y_preds
 
 
-def cal_RF_feature_importance(
+def cal_shap(
     X: np.array,
     y: np.array,
-    columns_name: list,
     task: Literal["classification", "regression"],
-    output_path: str = None,
     config_path: str = None,
-) -> pd.DataFrame:
+) -> dict:
     config = load_config(config_path) if config_path else DEFAULT_CONFIG
 
-    X_trains, _, y_trains, _ = generate_datasets(
+    X_trains, X_tests, y_trains, y_tests = generate_datasets(
         X, y, config["epoch"], config["test_size"]
     )
-    clfs = train_models(
-        X_trains,
-        y_trains,
-        task,
-        config["epoch"],
-        {"RandomForest": config["funcs"]["RandomForest"]},
-    )["RandomForest"]
+    clfs = train_models(X_trains, y_trains, task, config["epoch"], config["funcs"])
 
-    results = pd.DataFrame(
-        [clf.feature_importances_ for clf in clfs], columns=columns_name
-    )
+    shap_values = dict()
+    for func in clfs.keys():
+        for i in range(len(clfs[func])):
+            clf = clfs[func][i]
+            X_train, X_test = X_trains[i], X_tests[i]
+            X_train_summary = shap.kmeans(X_train, 10)
+            ex = shap.KernelExplainer(clf.predict, X_train_summary)
+            _shap_values = ex.shap_values(X_test)
 
-    if output_path:
-        results.to_csv(output_path)
-    return results
+            shap_values[func] = (
+                np.concatenate((shap_values[func], _shap_values), axis=0)
+                if func in shap_values
+                else _shap_values
+            )
+
+    return shap_values

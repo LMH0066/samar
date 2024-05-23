@@ -1,5 +1,9 @@
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import shap
 
 from samar.draw import lineplot
 
@@ -70,3 +74,24 @@ def get_comprehensive_comparison(scores: dict, output_path: str = None) -> pd.Da
     if output_path:
         results.to_csv(output_path)
     return results
+
+
+def show_shap(shap_values: dict, column_names: list, output_dirpath: str):
+    plt.rcParams["font.sans-serif"] = [
+        "Microsoft Yahei",
+        "Noto Sans CJK SC",
+        "Arial Unicode MS",
+    ]
+    plt.rcParams["axes.unicode_minus"] = False
+
+    for func in shap_values:
+        shap.summary_plot(
+            shap_values[func],
+            # X_tests.reshape(-1, X_tests.shape[-1]),
+            feature_names=column_names,
+            show=False,
+        )
+        plt.savefig(
+            os.path.join(output_dirpath, "{}.pdf".format(func)), bbox_inches="tight"
+        )
+        plt.clf()
