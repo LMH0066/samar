@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import pytest
+from sklearn.metrics.pairwise import cosine_similarity
 
 from samar.compute import cal_shap, predict, stable_test
 from samar.util import load_xlsx, read_stable_test_result
@@ -79,10 +80,8 @@ def test_cal_shap(
     importance = cal_shap(X, y, task, config_path)
     truth_importance = np.load(expected_file_path)
 
-    def _is_similar(df1: pd.DataFrame, df2: pd.DataFrame):
-        return (df1.mean() - df2.mean()).abs().le(0.01).all().all()
+    def _is_similar(array1: np.array, array2: np.array):
+        return np.diag(cosine_similarity(array1, array2)).mean() >= 0.95
 
     for key in importance:
-        assert _is_similar(
-            pd.DataFrame(importance[key]), pd.DataFrame(truth_importance[key])
-        )
+        assert _is_similar(importance[key], truth_importance[key])
