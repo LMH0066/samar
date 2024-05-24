@@ -6,7 +6,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 import yaml
-from fancyimpute import KNN
+from sklearn.impute import KNNImputer
 
 """
 config.yaml related code
@@ -93,7 +93,7 @@ class Preprocess:
     def KNN(self, data: pd.DataFrame) -> pd.DataFrame:
         filter_data = data.copy()
 
-        filled_data = KNN(k=10).fit_transform(filter_data)
+        filled_data = KNNImputer(n_neighbors=10).fit_transform(filter_data)
         filter_data[:] = filled_data
 
         return filter_data
