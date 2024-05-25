@@ -9,7 +9,7 @@
 
 - ✅ Straight forward from **.xlsx file** to **charts and tables**.
 - ✅ Robust comparison and prediction of multiple methods.
-- ✅ Feature importance analysis with RandomForest.
+- ✅ Feature importance analysis with [SHAP](https://shap.readthedocs.io/en/latest/index.html).
 - ✅ Robust comparison in independent verification dataset.
 - ✅ Both support classification and regression task.
 
