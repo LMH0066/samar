@@ -7,30 +7,29 @@ funcs:
       classification: sklearn.ensemble.AdaBoostClassifier
       regression: sklearn.ensemble.AdaBoostRegressor
     kwargs:
-      n_estimators: 100
+      n_estimators: 1000
   GradientBoosting:
     class_path:
       classification: sklearn.ensemble.GradientBoostingClassifier
       regression: sklearn.ensemble.GradientBoostingRegressor
     kwargs:
-      n_estimators: 100
+      loss: log_loss
+      n_estimators: 500
+      max_features: log2
   # Bagging
   RandomForest:
     class_path:
       classification: sklearn.ensemble.RandomForestClassifier
       regression: sklearn.ensemble.RandomForestRegressor
     kwargs:
-      n_estimators: 100
+      n_estimators: 500
+      max_features: 0.25
+      criterion: entropy
   ExtraTrees:
     class_path:
       classification: sklearn.ensemble.ExtraTreesClassifier
       regression: sklearn.ensemble.ExtraTreesRegressor
     kwargs:
-      n_estimators: 100
-  # Other
-  SVM:
-    class_path:
-      classification: sklearn.svm.SVC
-      regression: sklearn.svm.SVR
-    kwargs:
-      probability: True
+      n_estimators: 1000
+      max_features: log2
+      criterion: entropy
