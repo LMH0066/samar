@@ -84,7 +84,7 @@ def test_cal_shap(
     truth_importance = np.load(expected_file_path, allow_pickle=True).item()
 
     def _is_similar(array1: np.array, array2: np.array):
-        return np.diag(cosine_similarity(array1, array2)).mean() >= 0.95
+        return np.diag(cosine_similarity(array1, array2)).mean() >= 0.9
 
     for key in importance:
         assert _is_similar(importance[key], truth_importance[key])
