@@ -1,4 +1,5 @@
-import os
+from os.path import basename as opb
+from os.path import join as opj
 
 import numpy as np
 import pandas as pd
@@ -10,16 +11,18 @@ from samar.util import load_xlsx, read_stable_test_result
 
 
 @pytest.mark.parametrize(
-    "xlsx_path, preprocess_func, task, expected_file_path",
+    "xlsx_path, config_path, preprocess_func, task, expected_file_path",
     [
         (
             "tests/file/SSNHL.xlsx",
+            "tests/config.yaml",
             "default",
             "classification",
             "tests/file/stable_test_result_default.npy",
         ),
         (
             "tests/file/SSNHL.xlsx",
+            "tests/config.yaml",
             "KNN",
             "classification",
             "tests/file/stable_test_result_KNN.npy",
@@ -27,16 +30,15 @@ from samar.util import load_xlsx, read_stable_test_result
     ],
 )
 def test_stable_test_and_predict(
-    dir, xlsx_path, preprocess_func, task, expected_file_path
+    dir, xlsx_path, config_path, preprocess_func, task, expected_file_path
 ):
     X, y, _ = load_xlsx(xlsx_path, preprocess_func)
     scores, clfs = stable_test(
         X,
         y,
         task,
-        output_path=os.path.join(
-            dir, "stable_test_result_{}.npy".format(preprocess_func)
-        ),
+        output_path=opj(dir, "stable_test_result_{}.npy".format(preprocess_func)),
+        config_path=config_path,
     )
     truth_scores = read_stable_test_result(expected_file_path)
 
@@ -61,14 +63,14 @@ def test_stable_test_and_predict(
             "tests/config.yaml",
             "default",
             "classification",
-            "tests/file/shap_default.npz",
+            "tests/file/shap_default.npy",
         ),
         (
             "tests/file/SSNHL.xlsx",
             "tests/config.yaml",
             "KNN",
             "classification",
-            "tests/file/shap_KNN.npz",
+            "tests/file/shap_KNN.npy",
         ),
     ],
 )
@@ -78,7 +80,8 @@ def test_cal_shap(
     X, y, _ = load_xlsx(xlsx_path, preprocess_func)
 
     importance = cal_shap(X, y, task, config_path)
-    truth_importance = np.load(expected_file_path)
+    np.save(opj(dir, opb(expected_file_path)), importance)  # generate truth file
+    truth_importance = np.load(expected_file_path, allow_pickle=True).item()
 
     def _is_similar(array1: np.array, array2: np.array):
         return np.diag(cosine_similarity(array1, array2)).mean() >= 0.95

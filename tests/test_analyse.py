@@ -38,7 +38,7 @@ def test_get_comprehensive_comparison(dir, stable_test_result_path, expected_fil
 
     comprehensive_result = get_comprehensive_comparison(
         scores,
-        os.path.join(dir, "comprehensive_result.csv"),
+        os.path.join(dir, os.path.basename(expected_file_path)),
     )
 
     truth_comprehensive_result = pd.read_csv(expected_file_path, index_col=0)
