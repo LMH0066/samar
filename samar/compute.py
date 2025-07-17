@@ -1,4 +1,3 @@
-import os
 from typing import Literal, Tuple
 
 import numpy as np
@@ -8,6 +7,7 @@ from scipy.stats import pearsonr
 from sklearn.metrics import auc, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
+from tqdm import tqdm
 
 from samar.util import (
     DEFAULT_CONFIG,
@@ -46,7 +46,7 @@ def train_models(
     clfs = dict()
     for func_name in get_funcs_name(funcs):
         clfs[func_name] = []
-        for i in range(epoch):
+        for i in tqdm(range(epoch)):
             clf = get_clf(funcs, func_name, task, random_state=i + 1)
 
             clf.fit(X[i], y[i])

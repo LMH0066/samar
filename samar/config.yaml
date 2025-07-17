@@ -8,6 +8,7 @@ funcs:
       regression: sklearn.ensemble.AdaBoostRegressor
     kwargs:
       n_estimators: 1000
+      algorithm: SAMME
   GradientBoosting:
     class_path:
       classification: sklearn.ensemble.GradientBoostingClassifier

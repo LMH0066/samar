@@ -27,6 +27,14 @@ def main():
         "classification",
         "tests/file/stable_test_result_KNN.npy",
     )
+    test_stable_test_and_predict(
+        "tests/file",
+        "tests/file/SSNHL.xlsx",
+        "tests/config.yaml",
+        "miNNseq",
+        "classification",
+        "tests/file/stable_test_result_miNNseq.npy",
+    )
     test_cal_shap(
         "tests/file",
         "tests/file/SSNHL.xlsx",

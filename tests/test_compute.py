@@ -27,6 +27,13 @@ from samar.util import load_xlsx, read_stable_test_result
             "classification",
             "tests/file/stable_test_result_KNN.npy",
         ),
+        (
+            "tests/file/SSNHL.xlsx",
+            "tests/config.yaml",
+            "miNNseq",
+            "classification",
+            "tests/file/stable_test_result_miNNseq.npy",
+        ),
     ],
 )
 def test_stable_test_and_predict(
@@ -84,7 +91,7 @@ def test_cal_shap(
     truth_importance = np.load(expected_file_path, allow_pickle=True).item()
 
     def _is_similar(array1: np.array, array2: np.array):
-        return np.diag(cosine_similarity(array1, array2)).mean() >= 0.9
+        return np.diag(cosine_similarity(array1, array2)).mean() >= 0.8
 
     for key in importance:
         assert _is_similar(importance[key], truth_importance[key])

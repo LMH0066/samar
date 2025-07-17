@@ -7,6 +7,10 @@ import numpy as np
 import pandas as pd
 import yaml
 from sklearn.impute import KNNImputer
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+
+from samar.miNNseq import miNNseq
 
 """
 config.yaml related code
@@ -58,7 +62,7 @@ def load_xlsx(
     y = data[result_col].copy()
     data = data.drop([result_col], axis=1)
 
-    filter_data = Preprocess().do(data, preprocess_func)
+    filter_data = Preprocess().do(data, y, preprocess_func)
     X = np.array(filter_data)
     y = np.array(y[filter_data.index])
     return X, y, filter_data
@@ -69,10 +73,11 @@ class Preprocess:
         self.function_map = {
             "default": self.default,
             "KNN": self.KNN,
+            "miNNseq": self.miNNseq,
         }
 
-    def do(self, data: pd.DataFrame, func_name: str) -> pd.DataFrame:
-        filter_data = self.function_map[func_name](data)
+    def do(self, data: pd.DataFrame, y: pd.Series, func_name: str) -> pd.DataFrame:
+        filter_data = self.function_map[func_name](data, y)
 
         for column in filter_data.columns:
             filter_data[column] = pd.to_numeric(filter_data[column])
@@ -84,18 +89,40 @@ class Preprocess:
             ~data.apply(lambda row: row.astype(str).str.contains(string).any(), axis=1)
         ]
 
-    def default(self, data: pd.DataFrame) -> pd.DataFrame:
+    def _find_k(self, data: pd.DataFrame, y: pd.Series) -> int:
+        data = data.copy()
+        data = data.dropna()
+        y = y[data.index].copy()
+
+        grid = GridSearchCV(
+            KNeighborsClassifier(),
+            {"n_neighbors": np.arange(1, int(np.sqrt(data.shape[0])) + 1)},
+            cv=5,
+        )
+        grid.fit(np.array(data), np.array(y))
+
+        return grid.best_params_["n_neighbors"]
+
+    def default(self, data: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
         filter_data = data.copy()
 
         filter_data = filter_data.dropna()
         return filter_data
 
-    def KNN(self, data: pd.DataFrame) -> pd.DataFrame:
+    def KNN(self, data: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
         filter_data = data.copy()
 
-        filled_data = KNNImputer(n_neighbors=10).fit_transform(filter_data)
+        n_neighbors = self._find_k(filter_data, y)
+        filled_data = KNNImputer(n_neighbors=n_neighbors).fit_transform(filter_data)
         filter_data[:] = filled_data
+        return filter_data
 
+    def miNNseq(self, data: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
+        filter_data = data.copy()
+
+        n_neighbors = self._find_k(filter_data, y)
+        filled_data = miNNseq(data.values, n_neighbors)
+        filter_data[:] = filled_data
         return filter_data
 
 
