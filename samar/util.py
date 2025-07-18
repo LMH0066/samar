@@ -1,7 +1,7 @@
 import importlib
 import inspect
 import os
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -54,9 +54,14 @@ compute related code
 
 
 def load_xlsx(
-    path: str, preprocess_func: str, result_col: str = "efficacy evaluation"
+    path_or_df: Union[str, pd.DataFrame],
+    preprocess_func: str,
+    result_col: str = "efficacy evaluation",
 ) -> Tuple[np.array, np.array, pd.DataFrame]:
-    data = pd.read_excel(path, index_col=0, header=[0])
+    if type(path_or_df) is str:
+        data = pd.read_excel(path_or_df, index_col=0, header=[0])
+    else:
+        data = path_or_df.copy()
 
     data = data.dropna(subset=[result_col])
     y = data[result_col].copy()

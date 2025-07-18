@@ -1,6 +1,9 @@
 import click
 import numpy as np
+import pandas as pd
 
+import samar
+import samar.SSNHL
 from samar.analyse import get_comprehensive_comparison, rocsplot
 from samar.compute import (
     cal_accs_and_rocs,
@@ -37,6 +40,23 @@ def general_process(xlsx_path, task, preprocess_func):
         scores, output_path="comprehensive_result.csv"
     )
 
+@cli.command()
+@click.option("--xlsx_path", type=str)
+def predict_SSNHL(xlsx_path):
+    data = pd.read_excel(xlsx_path)
+    data["Left ear/Right ear"] = data["Left ear/Right ear"].replace(
+        ["L", "R", "L/R"], [1, 2, 3]
+    )
+    data["days from onset to treatment (categorized)"] = data[
+        "days from onset to treatment (categorized)"
+    ].replace(["≤7 days", "8-14 days", ">14days"], [0, 1, 2])
+    data["Curve type (affected side)"] = data["Curve type (affected side)"].replace(
+        ["normal", "downsloping", "flat", "profound", "upsloping"], [0, 1, 2, 3, 4]
+    )
+    data["Curve type (contralateral)"] = data["Curve type (contralateral)"].replace(
+        ["normal", "downsloping", "flat", "profound", "upsloping"], [0, 1, 2, 3, 4]
+    )
+    return samar.SSNHL.predict(data.values[:, 1:-1])
 
 @cli.command()
 @click.option("--xlsx_path", type=str)
